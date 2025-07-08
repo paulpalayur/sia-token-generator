@@ -92,9 +92,25 @@ foreach ($key in $requiredKeys) {
             $ssh_file_path = $config[$key]
         }
 
-        Write-Output "$key = $($config[$key])"
+        Write-Verbose "$key = $($config[$key])"
     }
 }
+if(-Not $ssh_file_path){
+    $ssh_file_path = Read-Host "Enter the SSH file path"
+    if(-Not $ssh_file_path){
+        $ssh_file_path = "$HOME\.cyberark\sia_key.pem"
+        Write-Host "Using default SSH file path: $ssh_file_path"
+    }
+}
+if(-Not (Test-Path -Path $ssh_file_path)){
+    New-Item -Path $ssh_file_path -ItemType File -Force | Out-Null
+    Write-Host "SSH file created at: $ssh_file_path"
+}
+else{
+    Write-Host "SSH file already exists at: $ssh_file_path"
+}
+
+
 if(-Not $tenantid){
     $tenantid = Read-Host "Enter Identity Tenant Id"
 }
